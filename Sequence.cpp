@@ -86,6 +86,14 @@ public:
 		return this->set.size();
 	}
 
+	void getRandomSequence(size_t might){
+		Sequence<T> result;
+		for(int i = 0; i < might; ++i){
+			result.insert(rand()%101);
+		}
+		std::swap(*this, result);
+	}
+
 
 	/* Operations on sequence*/
 	static Sequence<T> erase(const Sequence<T>& d1, size_t pos1 , size_t pos2);
