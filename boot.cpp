@@ -37,7 +37,7 @@ int main()
 				break;
 			}
 
-			auto B = Sequence<int>::exclude(B, A);
+			auto B = Sequence<int>::exclude(C, A);
 			auto C = Sequence<int>::concat(A, B);
 			auto D = Sequence<int>::merge(B, C);
 

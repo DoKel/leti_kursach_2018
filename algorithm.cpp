@@ -41,7 +41,7 @@ public:
 	{
 	}
 
-	KmpWrapper(nullptr_t n):
+	KmpWrapper(std::nullptr_t n):
 	isFake(true),
 	val(n)
 	{
