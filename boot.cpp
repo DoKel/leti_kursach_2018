@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <array>
 
 #include "Sequence.cpp"
 
@@ -7,19 +7,21 @@ int main()
 {
 
 	Sequence<int> seq;
-	seq.add(1);
-	seq.add(2);
-	seq.add(3);
-	seq.add(4);
-	seq.add(6);
+	seq.insert(6);
+	seq.insert(2);
+	seq.insert(3);
+	seq.insert(3);
+	seq.insert(3);
+	seq.insert(2);
+	seq.insert(3);
 
 	Sequence<int> seq2;
-	seq2.add(2);
-	seq2.add(3);
-	seq2.add(4);
-	seq2.add(5);
+	seq2.insert(3);
+	seq2.insert(3);
 
-	Sequence<int> res = seq ^ seq2;
+
+	auto res = Sequence<int>::exclude(seq, seq2);
+
 	for(auto& el : res){
 		std::cout << el << "\t";
 	}
