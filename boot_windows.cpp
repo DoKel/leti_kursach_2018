@@ -4,6 +4,13 @@
 
 #include "Sequence.cpp"
 
+struct rand101{
+	int operator() const{
+		return rand()%101;
+	}
+};
+
+
 int main()
 {
 	setlocale(LC_TYPE, "rus");
@@ -28,9 +35,9 @@ int main()
 		fprintf(out, "%d\n", ((int)(MAX_CARDINALITY - cardinality))/STEP + 1));
 
 		do{
-			A.getRandomSequence(cardinality - 4);
-			B.getRandomSequence(cardinality);
-			C.getRandomSequence(cardinality + 4);
+			A.getRandomSequence(cardinality - 4, rand101();
+			B.getRandomSequence(cardinality, rand101());
+			C.getRandomSequence(cardinality + 4, rand101());
 
 			if(!QueryPerfomanceCounter(&T1)){
 				std::cout << "Houston, we have a problem!" << '\n';

@@ -4,6 +4,7 @@
 #include <set>
 #include <list>
 #include <unordered_map>
+#include <stack>
 
 #include <utility> //for pairs
 #include <iterator> //for std::insert_iterator
@@ -19,11 +20,12 @@ public:
 	using TreeClass = typename std::set<wrapper>;
 	using TreeIterator = typename TreeClass::iterator;
 	using ListClass = typename std::list<TreeIterator>;
-	using ChangeTable = std::unordered_map<Sequence<T>::wrapper, Sequence<T>::TreeIterator, wrapper_hash>;
+	using ChangeTable = std::unordered_map<wrapper, TreeIterator, wrapper_hash>;
 
 	Sequence():
 	set(),
-	seq()
+	seq(),
+	unusedLocalHashes()
 	{
 	}
 
@@ -38,6 +40,7 @@ public:
 	Sequence<T>& operator=(const Sequence<T>& other){
 		this->set = other.set;
 		this->seq = other.seq;
+		this->unusedLocalHashes = other.unusedLocalHashes;
 
 		//Now this->seq elements point to other.set
 		//Let's fix it
@@ -61,6 +64,7 @@ public:
 	Sequence<T>& operator=(Sequence<T>&& other){
 		this->set = std::move(other.set);
 		this->seq = std::move(other.seq);
+		this->unusedLocalHashes = std::move(other.unusedLocalHashes);
 
 		return *this;
 	}
@@ -86,10 +90,11 @@ public:
 		return this->set.size();
 	}
 
-	void getRandomSequence(size_t might){
+	template <class Generator>
+	void getRandomSequence(size_t might, Generator gen){
 		Sequence<T> result;
 		for(int i = 0; i < might; ++i){
-			result.insert(rand()%101);
+			result.insert(gen());
 		}
 		std::swap(*this, result);
 	}
@@ -113,10 +118,12 @@ public:
 private:
 	 TreeClass set;
 	 ListClass seq;
+	 std::stack<size_t> unusedLocalHashes;
 
 	 bool safeDeleteFromTree(TreeIterator it){
 		 --( it->getCountRef() );
  		if(it->getCountRef() <= 0){
+			this->saveUnusedLocalHash(it->getLocalHash());
  			this->set.erase(it);
 			return true;
  		}
@@ -132,8 +139,27 @@ private:
 		return safeAddToTreeByIterator(out_it, el, 1);
 	}
 
+	size_t getNewLocalHash(){
+		if(this->unusedLocalHashes.empty()){
+			return this->getSetSize();
+		}else{
+			auto newLocalHash = this->unusedLocalHashes.top();
+			this->unusedLocalHashes.pop();
+			return newLocalHash;
+		}
+	}
+
+	void saveUnusedLocalHash(size_t hash){
+		this->unusedLocalHashes.push(hash);
+	}
+
 	TreeIterator safeAddToTreeByIterator(TreeIterator out_it, T el, size_t count){
-		auto iterator = this->set.insert(out_it, ElementWrapper(el, 0, this->size()));
+		size_t newLocalHash = this->getNewLocalHash();
+		auto iterator = this->set.insert(out_it, ElementWrapper(el, 0, newLocalHash));
+
+		if(iterator->getCountRef() != 0){
+			this->saveUnusedLocalHash(newLocalHash);
+		}
 
 		(iterator->getCountRef()) += count;
 
@@ -148,6 +174,9 @@ private:
 			wrap.getCountRef() = 0;
 
 			wrap.getLocalHash() = newLocalHash++;
+		}
+		while(!this->unusedLocalHashes.empty()){
+			this->unusedLocalHashes.pop();
 		}
 	}
 
