@@ -5,11 +5,6 @@
 #include <cstddef>
 #include <memory>
 
-/**
-	InIter haystack_begin, InIter haystack_end,
-	InIter needle_begin, InIter needle_end
-*/
-
 template<class T>
 std::vector<unsigned int> prefix_function(const std::vector<T>& str){
 	if(str.size() <= 0){
