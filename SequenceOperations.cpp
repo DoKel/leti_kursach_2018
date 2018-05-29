@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <list>
 
 #include "Sequence.cpp"
 #include "algorithm.cpp"
@@ -100,9 +101,9 @@ template<class T>
 Sequence<T> Sequence<T>::merge(const Sequence<T>& d1, const Sequence<T>& d2){
 	Sequence<T> result = Sequence<T>();
 
-	auto iterator = result.set.end();
 	TreeIterator it1 = d1.set.begin();
 	TreeIterator it2 = d2.set.begin();
+	std::list<ElementWrapper<T>> cache;
 
 	while(it1 != d1.set.end() || it2 != d2.set.end()){
 		TreeIterator* max = nullptr;
@@ -114,11 +115,16 @@ Sequence<T> Sequence<T>::merge(const Sequence<T>& d1, const Sequence<T>& d2){
 			max = &(*it1 < *it2 ? it1 : it2);
 		}
 
-		for(int i = 0; i < (*max)->getCountRef(); ++i){
-			iterator = result.safeAddToTreeByIterator(iterator, T(**max));
+		if(!cache.empty() && static_cast<const T&>(cache.back()) == T(**max)){
+				cache.back().getCountRef()+=(*max)->getCountRef();
+		}else{
+			cache.push_back(ElementWrapper<T>(T(**max), (*max)->getCountRef(), cache.size()));
 		}
+
 		++*max;
 	}
+
+	result.set = Sequence<T>::TreeClass(cache.begin(), cache.end());
 
 	//Here result.set is formed, and result.seq is empty
 

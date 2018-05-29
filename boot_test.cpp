@@ -10,27 +10,20 @@ struct randGen{
 
 int main() {
 	Sequence<int> seq1;
-	seq1.insert(1);
-	seq1.insert(2);
-	seq1.insert(2);
-	seq1.insert(3);
-	seq1.insert(4);
-	//seq1.getRandomSequence(10, randGen<6>());
+	seq1.getRandomSequence(3, randGen<6>());
 	for(auto& el: seq1){
 		std::cout << el << "\t";
 	}
 	std::cout << std::endl;
 
 	Sequence<int> seq2;
-	seq2.getRandomSequence(7, randGen<6>());
-	//for(auto& el: seq2){
-		//std::cout << el << "\t";
-	//}
+	seq2.getRandomSequence(3, randGen<6>());
+	for(auto& el: seq2){
+		std::cout << el << "\t";
+	}
 	std::cout << std::endl;
 
-	auto seq_res = Sequence<int>::erase(seq1, 1, 2);
-	seq_res.insert(5);
-
+	auto seq_res = Sequence<int>::merge(seq1, seq2);
 
 	for(auto& el: seq_res){
 		std::cout << el << "\t";
